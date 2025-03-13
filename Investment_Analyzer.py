@@ -13,7 +13,7 @@ import os
 os.environ["GROQ_API_KEY"] = st.secrets["GROQ_API_KEY"]
 
 #Initialize LLM
-llm = ChatGroq(model="llama-3.3-70b-versatile")
+llm = ChatGroq(model="deepseek-r1-distill-qwen-32b")
 
 #Intialize Tools
 wrapper = GoogleFinanceAPIWrapper(serp_api_key=st.secrets["SERP_API_KEY"])
