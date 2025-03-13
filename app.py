@@ -229,7 +229,7 @@ if st.button("Analyze Investment"):
     else:
         st.warning("Please enter an asset to analyze.")
 
-    st.markdown("### 🔗 Powered by LangGraph, Groq, Langchain Agents")
+    st.markdown("#### 🔗 Powered by LangGraph, Groq, Langchain ReAct Agents")
     
 
 
