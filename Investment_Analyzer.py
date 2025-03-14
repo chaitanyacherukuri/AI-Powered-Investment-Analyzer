@@ -5,6 +5,7 @@ from langchain_groq import ChatGroq
 from langchain.agents import AgentType, initialize_agent
 from langchain_community.tools.google_finance import GoogleFinanceQueryRun
 from langchain_community.utilities.google_finance import GoogleFinanceAPIWrapper
+from langchain_community.tools.yahoo_finance_news import YahooFinanceNewsTool
 
 import os
 
@@ -16,9 +17,11 @@ llm = ChatGroq(model="qwen-2.5-32b")
 
 #Intialize Tools
 wrapper = GoogleFinanceAPIWrapper(serp_api_key=st.secrets["SERP_API_KEY"])
-tool = GoogleFinanceQueryRun(api_wrapper=wrapper)
+gfinance = GoogleFinanceQueryRun(api_wrapper=wrapper)
 
-tools = [tool]
+yfinance = YahooFinanceNewsTool()
+
+tools = [gfinance, yfinance]
 
 #Initialize Agent
 agent = initialize_agent(llm=llm, tools=tools, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, handle_parsing_errors=True)
