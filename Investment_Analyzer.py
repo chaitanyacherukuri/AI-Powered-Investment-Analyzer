@@ -6,6 +6,7 @@ from langchain.agents import AgentType, initialize_agent
 from langchain_community.tools.google_finance import GoogleFinanceQueryRun
 from langchain_community.utilities.google_finance import GoogleFinanceAPIWrapper
 from langchain_community.tools.yahoo_finance_news import YahooFinanceNewsTool
+from langchain_community.tools import DuckDuckGoSearchRun
 
 import os
 
@@ -18,10 +19,10 @@ llm = ChatGroq(model="qwen-2.5-32b")
 #Intialize Tools
 wrapper = GoogleFinanceAPIWrapper(serp_api_key=st.secrets["SERP_API_KEY"])
 gfinance = GoogleFinanceQueryRun(api_wrapper=wrapper)
-
 yfinance = YahooFinanceNewsTool()
+search = DuckDuckGoSearchRun()
 
-tools = [gfinance, yfinance]
+tools = [gfinance, yfinance, search]
 
 #Initialize Agent
 agent = initialize_agent(llm=llm, tools=tools, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, handle_parsing_errors=True)
