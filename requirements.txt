@@ -6,4 +6,5 @@ langchain-core
 langchain-community
 langchain-huggingface
 langchain-groq
+google-search-results
 streamlit
