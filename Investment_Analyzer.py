@@ -1,6 +1,5 @@
 import streamlit as st
-from typing import TypedDict, Literal
-from pydantic import BaseModel
+from typing import TypedDict
 from langgraph.graph import StateGraph, START, END
 from langchain_groq import ChatGroq
 from langchain.agents import AgentType, initialize_agent
@@ -10,10 +9,10 @@ from langchain_community.utilities.google_finance import GoogleFinanceAPIWrapper
 import os
 
 #Set API Keys
-os.environ["GROQ_API_KEY"] = st.secrets["GROQ_API_KEY"]
+os.environ["GOOGLE_API_KEY"] = st.secrets["GROQ_API_KEY"]
 
 #Initialize LLM
-llm = ChatGroq(model="deepseek-r1-distill-qwen-32b")
+llm = ChatGroq(model="qwen-2.5-32b")
 
 #Intialize Tools
 wrapper = GoogleFinanceAPIWrapper(serp_api_key=st.secrets["SERP_API_KEY"])
@@ -22,7 +21,7 @@ tool = GoogleFinanceQueryRun(api_wrapper=wrapper)
 tools = [tool]
 
 #Initialize Agent
-agent = initialize_agent(llm=llm, tools=tools, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION)
+agent = initialize_agent(llm=llm, tools=tools, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, handle_parsing_errors=True)
 
 #Define State
 class State(TypedDict):
@@ -72,8 +71,6 @@ def technical_analysis(state: State):
     7. Chart Patterns: Identify key chart patterns (head and shoulders, double top/bottom, etc.)
     8. Technical Outlook: Overall assessment based on technical indicators
 
-    For cryptocurrencies, adapt analysis to include trading volume, liquidity, and market depth.
-    For real estate, focus on price trends, transaction volume, and regional market dynamics.
     Be specific with numbers where possible and explain the technical significance.
     """
     response = agent.invoke(prompt)
@@ -95,13 +92,10 @@ def sentiment_analysis(state: State):
     6. Market Narratives: Dominant narratives or stories surrounding this asset
     7. Sentiment Outlook: Overall sentiment assessment and potential market psychology factors
     
-    For cryptocurrencies, focus on sentiment from crypto-specific sources like CoinDesk, Crypto Twitter, and Telegram groups.
-    For real estate, consider sentiment from real estate blogs, forums, and local news outlets.
     Provide specific examples of recent sentiment drivers where possible.
     """
     response = agent.invoke(prompt)
     return {"sentiment_insights": response["output"]}
-
 
 def risk_assessment(state: State):
     """Conducts a Risk Evaluation (Market, Industry, Company, Financial, Regulatory, Competitive, Macro)"""
@@ -119,13 +113,10 @@ def risk_assessment(state: State):
     8. Macroeconomic Sensitivity: How economic factors (interest rates, inflation) affect this asset
     9. Risk Mitigation Strategies: Potential hedging or risk management approaches
     
-    For cryptocurrencies, consider regulatory risks, market volatility, and technological risks.
-    For real estate, focus on interest rate risks, regional market dynamics, and property-specific risks.
     Provide a risk rating (Low/Medium/High) with justification.
     """
     response = agent.invoke(prompt)
     return {"risk_evaluation": response["output"]}
-
 
 def generate_report(state: State):
     """Combines all investment insights into a final report"""
@@ -162,6 +153,7 @@ def asset(state):
 
 #Define State Graph
 builder = StateGraph(State)
+
 
 #Add Nodes
 builder.add_node("Investment Asset", asset)
@@ -211,11 +203,12 @@ with st.sidebar:
 if st.button("Analyze Investment"):
     if asset_text:
         state = graph.invoke({"investment_asset": asset_text})
-        with st.expander("📊 Technical Analysis", expanded=False):
-            st.markdown(state["technical_insights"])
             
         with st.expander("💰 Fundamental Analysis", expanded=False):
             st.markdown(state["fundamental_insights"])
+
+        with st.expander("📊 Technical Analysis", expanded=False):
+            st.markdown(state["technical_insights"])
             
         with st.expander("📰 Sentiment Analysis", expanded=False):
             st.markdown(state["sentiment_insights"])
@@ -230,7 +223,4 @@ if st.button("Analyze Investment"):
         st.warning("Please enter an asset to analyze.")
 
     st.markdown("#### 🔗 Powered by LangGraph, Groq, Langchain ReAct Agents")
-    
-
-
 
