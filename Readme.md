@@ -61,3 +61,4 @@ Analyze stocks, cryptocurrencies, or real estate assets using AI-driven technica
 - `langchain-groq`
 - `langgraph`
 - `google-search-results`
+- `yfinance`

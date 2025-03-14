@@ -8,5 +8,4 @@ langchain-huggingface
 langchain-groq
 google-search-results
 yfinance
-duckduckgo-search
 streamlit
