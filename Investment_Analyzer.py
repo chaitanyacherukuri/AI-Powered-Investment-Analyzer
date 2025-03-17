@@ -10,7 +10,7 @@ from langchain_community.tools.yahoo_finance_news import YahooFinanceNewsTool
 import os
 
 #Set API Keys
-os.environ["GOOGLE_API_KEY"] = st.secrets["GROQ_API_KEY"]
+os.environ["GROQ_API_KEY"] = st.secrets["GROQ_API_KEY"]
 
 #Initialize LLM
 llm = ChatGroq(model="qwen-2.5-32b")
@@ -179,7 +179,7 @@ builder.add_edge("Risk Assessment", "Generate Report")
 
 builder.add_edge("Generate Report", END)
 
-#Complete the Workflow
+#Compile the Workflow
 graph = builder.compile()
 
 # Streamlit UI
