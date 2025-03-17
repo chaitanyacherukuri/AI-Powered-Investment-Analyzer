@@ -14,8 +14,8 @@ Analyze stocks, cryptocurrencies, or real estate assets using AI-driven technica
 
 1. Clone the repository:
     ```sh
-    git clone https://github.com/yourusername/AI-Investment-Analyzer.git
-    cd AI-Investment-Analyzer
+    git clone https://github.com/chaitanyacherukuri/AI-Powered-Investment-Analyzer.git
+    cd AI-Powered-Investment-Analyzer
     ```
 
 2. Create and activate a virtual environment:
