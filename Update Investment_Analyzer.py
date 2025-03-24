@@ -6,6 +6,7 @@ from langchain.agents import AgentType, initialize_agent
 from langchain_community.tools.google_finance import GoogleFinanceQueryRun
 from langchain_community.utilities.google_finance import GoogleFinanceAPIWrapper
 from langchain_community.tools.yahoo_finance_news import YahooFinanceNewsTool
+from langchain_core.output_parsers import StrOutputParser
 
 import os
 
@@ -24,6 +25,9 @@ tools = [gfinance, yfinance]
 
 #Initialize Agent
 agent = initialize_agent(llm=llm, tools=tools, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, handle_parsing_errors=True)
+
+#Intialize StringOutputParser
+output_parser = StrOutputParser()
 
 #Define State
 class State(TypedDict):
@@ -54,7 +58,7 @@ def fundamental_analysis(state: State):
     For real estate, focus on cap rates, NOI, vacancy rates, and regional market trends.
     """
     response = agent.invoke(prompt)
-    return {"fundamental_insights": response["output"]}
+    return {"fundamental_insights": output_parser.invoke(response["output"])}
 
 
 def technical_analysis(state: State):
@@ -76,7 +80,7 @@ def technical_analysis(state: State):
     Be specific with numbers where possible and explain the technical significance.
     """
     response = agent.invoke(prompt)
-    return {"technical_insights": response["output"]}
+    return {"technical_insights": output_parser.invoke(response["output"])}
 
 
 def sentiment_analysis(state: State):
@@ -97,7 +101,7 @@ def sentiment_analysis(state: State):
     Provide specific examples of recent sentiment drivers where possible.
     """
     response = agent.invoke(prompt)
-    return {"sentiment_insights": response["output"]}
+    return {"sentiment_insights": output_parser.invoke(response["output"])}
 
 def risk_assessment(state: State):
     """Conducts a Risk Evaluation (Market, Industry, Company, Financial, Regulatory, Competitive, Macro)"""
@@ -118,7 +122,7 @@ def risk_assessment(state: State):
     Provide a risk rating (Low/Medium/High) with justification.
     """
     response = agent.invoke(prompt)
-    return {"risk_evaluation": response["output"]}
+    return {"risk_evaluation": output_parser.invoke(response["output"])}
 
 def generate_report(state: State):
     """Combines all investment insights into a final report"""
@@ -148,14 +152,13 @@ def generate_report(state: State):
     Format as a clean, professional investment report with clear sections.
     """
     response = agent.invoke(prompt)
-    return {"final_report": response["output"]}
+    return {"final_report": output_parser.invoke(response["output"])}
 
 def asset(state):
     return state
 
 #Define State Graph
 builder = StateGraph(State)
-
 
 #Add Nodes
 builder.add_node("Investment Asset", asset)
@@ -201,7 +204,6 @@ with st.sidebar:
 
     st.image(image_path, caption="Workflow Execution")
 
-
 if st.button("Analyze Investment"):
     if asset_text:
         state = graph.invoke({"investment_asset": asset_text})
@@ -225,4 +227,3 @@ if st.button("Analyze Investment"):
         st.warning("Please enter an asset to analyze.")
 
     st.markdown("#### 🔗 Powered by LangGraph, Groq, Langchain ReAct Agents")
-
